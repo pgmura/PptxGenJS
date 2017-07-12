@@ -401,15 +401,24 @@ var PptxGenJS = function(){
 		// STEP 3: Wait for Promises (if any) then push the PPTX file to client-browser
 		Promise.all( arrChartPromises )
 		.then(function(arrResults){
-			var strExportName = ((gObjPptx.fileName.toLowerCase().indexOf('.ppt') > -1) ? gObjPptx.fileName : gObjPptx.fileName+gObjPptx.fileExtn);
-			if ( NODEJS ) {
-				if ( callback )
-					zip.generateAsync({type:'nodebuffer'}).then(function(content){ fs.writeFile(strExportName, content, callback(strExportName)); });
-				else
-					zip.generateAsync({type:'nodebuffer'}).then(function(content){ fs.writeFile(strExportName, content); });
-			}
-			else {
-				zip.generateAsync({type:'blob'}).then(function(content){ writeFileToBrowser(strExportName, content, callback); });
+			if( gObjPptx.fileName.write){
+                if ( NODEJS ) {
+                    if ( callback )
+                        zip.generateAsync({type:'nodebuffer'}).then(function(content){ gObjPptx.fileName.write(content, callback(strExportName)); });
+                    else
+                        zip.generateAsync({type:'nodebuffer'}).then(function(content){ gObjPptx.fileName.write(content); });
+                }
+			} else {
+                var strExportName = ((gObjPptx.fileName.toLowerCase().indexOf('.ppt') > -1) ? gObjPptx.fileName : gObjPptx.fileName+gObjPptx.fileExtn);
+                if ( NODEJS ) {
+                    if ( callback )
+                        zip.generateAsync({type:'nodebuffer'}).then(function(content){ fs.writeFile(strExportName, content, callback(strExportName)); });
+                    else
+                        zip.generateAsync({type:'nodebuffer'}).then(function(content){ fs.writeFile(strExportName, content); });
+                }
+                else {
+                    zip.generateAsync({type:'blob'}).then(function(content){ writeFileToBrowser(strExportName, content, callback); });
+                }
 			}
 		})
 		.catch(function(strErr){
@@ -3557,5 +3566,5 @@ if ( NODEJS ) {
 	var sizeOf = require("image-size");
 
 	// B: Export module
-	module.exports = new PptxGenJS();
+	module.exports = PptxGenJS;
 }
